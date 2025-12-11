@@ -5,6 +5,8 @@ abstract interface class OAuth2Token {
   String get refreshToken;
   String get userName;
   String get iss;
+  String get provider;
+  set provider(String value);
   bool get timeToRefresh;
   bool get canRefresh;
   bool get timeToLogin;
@@ -110,7 +112,13 @@ class OAuth2TokenF implements OAuth2Token {
   String get refreshToken => json["refresh_token"] ?? "";
 
   @override
-  String get iss => idToken?["iss"] ?? ""; 
+  String get iss => idToken?["iss"] ?? "";
+
+  @override
+  String get provider => json["provider"] ?? iss;
+
+  @override
+  set provider(String value) => json["provider"] = value;
 
   @override
   String get userName => idToken?["email"] ?? idToken?["sub"] ?? "";

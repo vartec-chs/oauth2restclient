@@ -91,6 +91,7 @@ class OAuth2Account {
 
     var token = await provider.login();
     if (token != null) {
+      token.provider = service;
       await saveAccount(service, token.userName, token);
     }
     return token;
@@ -105,13 +106,14 @@ class OAuth2Account {
   }
 
   Future<OAuth2Token?> forceRelogin(OAuth2Token expiredToken) async {
-    var provider = getProvider(expiredToken.iss);
+    var provider = getProvider(expiredToken.provider);
     if (provider == null) {
-      throw Exception("can't find provider for '{$expiredToken.iss}'");
+      throw Exception("can't find provider for '{$expiredToken.provider}'");
     }
 
     var token = await provider.login();
     if (token != null) {
+      token.provider = provider.name;
       await saveAccount(provider.name, token.userName, token);
       return token;
     }
@@ -138,7 +140,8 @@ class OAuth2Account {
 
   Future<OAuth2Token?> refreshToken(OAuth2Token expiredToken) async {
     //, String service, String userName
-    final String refreshKey = "${expiredToken.iss}:${expiredToken.userName}";
+    final String refreshKey =
+        "${expiredToken.provider}:${expiredToken.userName}";
 
     // 이미 진행 중인 갱신이 있는지 확인
     if (_pendingRefreshes.containsKey(refreshKey)) {
@@ -160,7 +163,7 @@ class OAuth2Account {
   }
 
   Future<OAuth2Token?> _doRefreshToken(OAuth2Token token) async {
-    var provider = getProvider(token.iss);
+    var provider = getProvider(token.provider);
     if (provider == null) return null;
 
     //String service, String userName
