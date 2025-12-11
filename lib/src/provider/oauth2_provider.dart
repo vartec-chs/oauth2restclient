@@ -89,7 +89,7 @@ class OAuth2ProviderF implements OAuth2Provider {
               <!DOCTYPE html>
               <html>
               <head>
-                <title>로그인 실패</title>
+                <title>Error</title>
                 <style>
                   body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
                   h1 { color: #e74c3c; }
@@ -97,8 +97,8 @@ class OAuth2ProviderF implements OAuth2Provider {
                 </style>
               </head>
               <body>
-                <h1>로그인 실패</h1>
-                <p>인증에 실패했습니다. 이 창을 닫고 앱으로 돌아가세요.</p>
+                <h1>Login Failed</h1>
+                <p>Authentication failed. Please close this window and return to the app.</p>
               </body>
               </html>
             ''');
@@ -110,7 +110,7 @@ class OAuth2ProviderF implements OAuth2Provider {
               <!DOCTYPE html>
               <html>
               <head>
-                <title>로그인 성공</title>
+                <title>Login Success</title>
                 <style>
                   body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
                   h1 { color: #4285f4; }
@@ -118,8 +118,8 @@ class OAuth2ProviderF implements OAuth2Provider {
                 </style>
               </head>
               <body>
-                <h1>로그인 성공!</h1>
-                <p>인증이 완료되었습니다. 이 창을 닫고 앱으로 돌아가세요.</p>
+                <h1>Login Success!</h1>
+                <p>Authentication completed. Please close this window and return to the app.</p>
               </body>
               </html>
             ''');

@@ -110,7 +110,7 @@ class OAuth2TokenF implements OAuth2Token {
   String get refreshToken => json["refresh_token"] ?? "";
 
   @override
-  String get iss => idToken?["iss"] ?? "";
+  String get iss => idToken?["iss"] ?? ""; 
 
   @override
   String get userName => idToken?["email"] ?? idToken?["sub"] ?? "";
