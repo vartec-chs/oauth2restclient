@@ -36,7 +36,7 @@ class OAuth2Account {
     }
   }
 
-  static const tokenPrefix = "OAUTH2ACCOUNT107"; // ✅ OAuth 키를 구별하기 위한 접두사 추가
+  static const tokenPrefix = "OAUTH2ACCOUNT"; // ✅ OAuth token prefix
 
   String keyFor(String service, String userName) =>
       "$appPrefix-$tokenPrefix-$service-$userName";
@@ -88,6 +88,8 @@ class OAuth2Account {
   Future<OAuth2Token?> newLogin(String service) async {
     var provider = getProvider(service);
     if (provider == null) throw Exception("can't find provider '$service'");
+
+    
 
     var token = await provider.login();
     if (token != null) {

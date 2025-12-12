@@ -61,16 +61,26 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final account = OAuth2Account(appPrefix: "oauth2restclientexample");
-  final service = "microsoft";
+  final account = OAuth2Account(
+    appPrefix: "oauth2restclientexample",
+    tokenStorage: OAuth2TokenStorageJson(
+      file: File(Directory.systemTemp.path + "/oauth2_tokens_example.json"),
+    ),
+  );
+  final service = "google";
 
   @override
   void initState() {
     super.initState();
 
-    var dropbox = Dropbox(
+    final file = File(
+      Directory.systemTemp.path + "/oauth2_tokens_example.json",
+    );
+    debugPrint("Using token file: ${file.path}");
+
+    final dropbox = Dropbox(
       clientId: Config.dropboxClientId,
-      redirectUri: "aircomix://${Config.dropboxClientId}/",
+      redirectUri: "http://localhost:8713/callback",
       scopes: [
         "account_info.read",
         "files.content.read",
@@ -80,73 +90,21 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
     );
 
-    var google = Google(
-      redirectUri:
-          "com.googleusercontent.apps.95012368401-j0gcpfork6j38q3p8sg37admdo086gbs:/oauth2redirect",
+    account.addProvider(dropbox);
+
+    final google = Google(
+      redirectUri: "http://localhost:8569/callback",
       scopes: [
         'https://www.googleapis.com/auth/drive',
         "https://www.googleapis.com/auth/photoslibrary",
         "openid",
         "email",
       ],
-      clientId: Config.mobileClientId,
+      clientId: Config.googleClientId,
+      clientSecret: Config.googleClientSecret,
     );
-
-    var ms = Microsoft(
-      clientId: Config.onedriveClientId,
-      redirectUri: "aircomix://${Config.onedriveClientId}/",
-      scopes: [
-        "User.Read",
-        "Files.ReadWrite.All",
-        "Files.Read.All",
-        "openid",
-        "email",
-        "offline_access",
-      ],
-    );
-
-    if (Platform.isMacOS) {
-      google = Google(
-        redirectUri: "http://localhost:8713/pobpob",
-        scopes: [
-          'https://www.googleapis.com/auth/drive',
-          "https://www.googleapis.com/auth/photoslibrary",
-          "openid",
-          "email",
-        ],
-        clientId: Config.desktopClientId,
-        clientSecret: Config.desktopClientSecret,
-      );
-
-      dropbox = Dropbox(
-        clientId: Config.dropboxClientId,
-        redirectUri: "http://localhost:8713/pobpob",
-        scopes: [
-          "account_info.read",
-          "files.content.read",
-          "files.content.write",
-          "files.metadata.write",
-          "files.metadata.read",
-        ],
-      );
-
-      ms = Microsoft(
-        clientId: Config.onedriveClientId,
-        redirectUri: "http://localhost:8713/pobpob",
-        scopes: [
-          "User.Read",
-          "Files.ReadWrite.All",
-          "Files.Read.All",
-          "openid",
-          "email",
-          "offline_access",
-        ],
-      );
-    }
 
     account.addProvider(google);
-    account.addProvider(dropbox);
-    account.addProvider(ms);
   }
 
   int _counter = 0;
@@ -156,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
       var response = await client.postJson(
         "https://api.dropboxapi.com/2/users/get_current_account",
       );
-      return response["email"] as String;
+      return response.toString();
     }
 
     if (service == "microsoft") {
@@ -170,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var response = await client.getJson(
       "https://www.googleapis.com/oauth2/v3/userinfo",
     );
-    return response["email"] as String;
+    return response.toString();
   }
 
   void _incrementCounter() async {

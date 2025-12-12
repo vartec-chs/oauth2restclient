@@ -25,6 +25,7 @@ class OAuth2ProviderF implements OAuth2Provider {
   final List<String>? scopes;
   final String authEndpoint;
   final String tokenEndpoint;
+  final String getUserInfoEndpoint;
 
   String? codeVerifier;
 
@@ -39,6 +40,7 @@ class OAuth2ProviderF implements OAuth2Provider {
     this.scopes,
     required this.authEndpoint,
     required this.tokenEndpoint,
+    required this.getUserInfoEndpoint,
   });
 
   String get _authUrl {
@@ -124,6 +126,8 @@ class OAuth2ProviderF implements OAuth2Provider {
               </html>
             ''');
             await request.response.close();
+
+            debugPrint("OAuth2 login successful. Data: $response");
 
             return OAuth2TokenF.fromJsonString(response);
           }

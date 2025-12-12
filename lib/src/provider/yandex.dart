@@ -10,5 +10,6 @@ class Yandex extends OAuth2ProviderF {
          name: "yandex",
          authEndpoint: "https://oauth.yandex.ru/authorize",
          tokenEndpoint: "https://oauth.yandex.ru/token",
+         getUserInfoEndpoint: "https://login.yandex.ru/info",
        );
 }
