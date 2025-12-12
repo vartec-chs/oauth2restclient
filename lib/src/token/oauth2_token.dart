@@ -12,6 +12,7 @@ abstract interface class OAuth2Token {
   bool get timeToLogin;
   String toJsonString();
   OAuth2Token mergeToken(OAuth2Token newToken);
+  void setUserInfo(Map<String, dynamic> userInfo);
 }
 
 class OAuth2TokenF implements OAuth2Token {
@@ -121,7 +122,30 @@ class OAuth2TokenF implements OAuth2Token {
   set provider(String value) => json["provider"] = value;
 
   @override
-  String get userName => idToken?["email"] ?? idToken?["sub"] ?? "";
+  String get userName {
+    // Сначала проверяем user_info, потом idToken
+    final userInfo = json["user_info"];
+    if (userInfo is Map<String, dynamic>) {
+      // Проверяем различные поля, которые могут содержать имя пользователя
+      return userInfo["email"] ??
+          userInfo["mail"] ??
+          userInfo["userPrincipalName"] ??
+          userInfo["preferred_username"] ??
+          userInfo["login"] ??
+          userInfo["sub"] ??
+          userInfo["id"] ??
+          userInfo["uid"] ??
+          "";
+    }
+
+    // Если user_info нет, используем idToken
+    return idToken?["email"] ?? idToken?["sub"] ?? "";
+  }
+
+  @override
+  void setUserInfo(Map<String, dynamic> userInfo) {
+    json["user_info"] = userInfo;
+  }
 
   @override
   OAuth2Token mergeToken(OAuth2Token newToken) {

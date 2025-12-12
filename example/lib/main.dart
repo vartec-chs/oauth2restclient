@@ -132,10 +132,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _incrementCounter() async {
-    var token = await account.newLogin(service);
-    if (token?.timeToLogin ?? false) {
-      token = await account.forceRelogin(token!);
-    }
+    var token = await account.loadAccount(service, 'misticmvm@gmail.com');
+    // if (token?.timeToLogin ?? false) {
+    token = await account.forceRelogin(token!);
+    // }
 
     if (token == null) throw Exception("login first");
     var client = await account.createClient(token);

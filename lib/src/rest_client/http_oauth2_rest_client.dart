@@ -48,7 +48,8 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
     OAuth2RestBody? body,
     Map<String, String>? queryParams,
     Map<String, String>? headers,
-    OAuth2ProgressCallback? onProgress,
+    OAuth2ProgressCallback? onUploadProgress,
+    OAuth2ProgressCallback? onDownloadProgress,
     OAuth2CancelToken? token,
     required int retryCount,
   }) async {
@@ -68,7 +69,7 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
       final stream = _wrapUploadStream(
         body.toStream(),
         body.contentLength,
-        onProgress: onProgress,
+        onProgress: onUploadProgress,
         token: token,
         request: request,
       );
@@ -92,12 +93,31 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
           body: body,
           queryParams: queryParams,
           headers: headers,
+          onUploadProgress: onUploadProgress,
+          onDownloadProgress: onDownloadProgress,
+          token: token,
           retryCount: retryCount + 1,
         );
       } else {
         throw OAuth2ExceptionF.unauthorized(message: 'Failed to refresh token');
       }
     }
+
+    // Оборачиваем response для отслеживания прогресса скачивания
+    if (onDownloadProgress != null) {
+      final wrappedStream = _wrapDownloadStream(
+        response,
+        response.contentLength,
+        onProgress: onDownloadProgress,
+        token: token,
+      );
+      return OAuth2RestResponseF.fromStream(
+        wrappedStream,
+        response.statusCode,
+        response.headers,
+      );
+    }
+
     return OAuth2RestResponseF(response);
   }
 
@@ -106,12 +126,14 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
     String url, {
     Map<String, String>? queryParams,
     Map<String, String>? headers,
+    OAuth2ProgressCallback? onProgress,
   }) {
     return _request(
       HttpMethod.get,
       url,
       queryParams: queryParams,
       headers: headers,
+      onDownloadProgress: onProgress,
       retryCount: 0,
     );
   }
@@ -137,8 +159,14 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
     String url, {
     Map<String, String>? queryParams,
     Map<String, String>? headers,
+    OAuth2ProgressCallback? onProgress,
   }) async {
-    var response = await get(url, queryParams: queryParams, headers: headers);
+    var response = await get(
+      url,
+      queryParams: queryParams,
+      headers: headers,
+      onProgress: onProgress,
+    );
     return await _consumeString(response);
   }
 
@@ -147,11 +175,13 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
     String url, {
     Map<String, String>? queryParams,
     Map<String, String>? headers,
+    OAuth2ProgressCallback? onProgress,
   }) async {
     var jsonString = await getString(
       url,
       queryParams: queryParams,
       headers: headers,
+      onProgress: onProgress,
     );
     var json = jsonDecode(jsonString);
     return json as Map<String, dynamic>;
@@ -162,11 +192,13 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
     String url, {
     Map<String, String>? queryParams,
     Map<String, String>? headers,
+    OAuth2ProgressCallback? onProgress,
   }) async {
     var jsonString = await getString(
       url,
       queryParams: queryParams,
       headers: headers,
+      onProgress: onProgress,
     );
     var json = jsonDecode(jsonString);
     return json as List<Map<String, dynamic>>;
@@ -177,8 +209,14 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
     String url, {
     Map<String, String>? queryParams,
     Map<String, String>? headers,
+    OAuth2ProgressCallback? onProgress,
   }) async {
-    var response = await get(url, queryParams: queryParams, headers: headers);
+    var response = await get(
+      url,
+      queryParams: queryParams,
+      headers: headers,
+      onProgress: onProgress,
+    );
     response.ensureSuccess();
     return response.bodyStream;
   }
@@ -218,7 +256,7 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
       body: body,
       queryParams: queryParams,
       headers: headers,
-      onProgress: onProgress,
+      onUploadProgress: onProgress,
       token: token,
       retryCount: 0,
     );
@@ -333,6 +371,32 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
     }
   }
 
+  Stream<List<int>> _wrapDownloadStream(
+    Stream<List<int>> original,
+    int? totalLength, {
+    OAuth2ProgressCallback? onProgress,
+    OAuth2CancelToken? token,
+  }) async* {
+    int downloaded = 0;
+
+    await for (final chunk in original) {
+      // Проверка отмены
+      if (token?.isCancelled == true) {
+        throw OAuth2ExceptionF.canceled(
+          reason: token?.reason,
+          message: 'Download cancelled',
+        );
+      }
+
+      downloaded += chunk.length;
+
+      // Вызов колбэка прогресса
+      onProgress?.call(downloaded, totalLength);
+
+      yield chunk;
+    }
+  }
+
   @override
   Future<OAuth2RestResponse> post(
     String url, {
@@ -348,7 +412,7 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
       body: body,
       queryParams: queryParams,
       headers: headers,
-      onProgress: onProgress,
+      onUploadProgress: onProgress,
       token: token,
       retryCount: 0,
     );
@@ -446,7 +510,7 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
       body: body,
       queryParams: queryParams,
       headers: headers,
-      onProgress: onProgress,
+      onUploadProgress: onProgress,
       token: token,
       retryCount: 0,
     );

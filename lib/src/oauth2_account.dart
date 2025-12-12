@@ -89,11 +89,17 @@ class OAuth2Account {
     var provider = getProvider(service);
     if (provider == null) throw Exception("can't find provider '$service'");
 
-    
-
     var token = await provider.login();
     if (token != null) {
       token.provider = service;
+
+      // Получаем информацию о пользователе через API
+      final userInfo = await provider.getUserInfo(token.accessToken);
+      if (userInfo == null) {
+        throw Exception("can't get user info from provider");
+      }
+
+      token.setUserInfo(userInfo);
       await saveAccount(service, token.userName, token);
     }
     return token;
@@ -116,6 +122,14 @@ class OAuth2Account {
     var token = await provider.login();
     if (token != null) {
       token.provider = provider.name;
+
+      // Получаем информацию о пользователе через API
+      final userInfo = await provider.getUserInfo(token.accessToken);
+      if (userInfo == null) {
+        throw Exception("can't get user info from provider");
+      }
+
+      token.setUserInfo(userInfo);
       await saveAccount(provider.name, token.userName, token);
       return token;
     }

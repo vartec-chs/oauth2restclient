@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_links/app_links.dart';
@@ -16,6 +17,7 @@ abstract interface class OAuth2Provider {
   Future<OAuth2Token?> login();
   Future<String?> exchangeCode(String? code);
   Future<OAuth2Token?> refreshToken(String? refreshToken);
+  Future<Map<String, dynamic>?> getUserInfo(String accessToken);
 }
 
 class OAuth2ProviderF implements OAuth2Provider {
@@ -213,6 +215,30 @@ class OAuth2ProviderF implements OAuth2Provider {
 
     if (response.statusCode == 200) {
       return OAuth2TokenF.fromJsonString(response.body);
+    }
+
+    return null;
+  }
+
+  @override
+  Future<Map<String, dynamic>?> getUserInfo(String accessToken) async {
+    if (accessToken.isEmpty) return null;
+
+    try {
+      final response = await http.get(
+        Uri.parse(getUserInfoEndpoint),
+        headers: {
+          "Authorization": "Bearer $accessToken",
+          "Content-Type": "application/json",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        return decoded is Map<String, dynamic> ? decoded : null;
+      }
+    } catch (e) {
+      debugPrint("getUserInfo error: $e");
     }
 
     return null;

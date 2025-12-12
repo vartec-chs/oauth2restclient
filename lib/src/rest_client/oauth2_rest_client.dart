@@ -12,26 +12,31 @@ abstract interface class OAuth2RestClient {
     String url, {
     Map<String, String>? queryParams,
     Map<String, String>? headers,
+    OAuth2ProgressCallback? onProgress,
   });
   Future<String> getString(
     String url, {
     Map<String, String>? queryParams,
     Map<String, String>? headers,
+    OAuth2ProgressCallback? onProgress,
   });
   Future<Map<String, dynamic>> getJson(
     String url, {
     Map<String, String>? queryParams,
     Map<String, String>? headers,
+    OAuth2ProgressCallback? onProgress,
   });
   Future<List<Map<String, dynamic>>> getJsonList(
     String url, {
     Map<String, String>? queryParams,
     Map<String, String>? headers,
+    OAuth2ProgressCallback? onProgress,
   });
   Future<Stream<List<int>>> getStream(
     String url, {
     Map<String, String>? queryParams,
     Map<String, String>? headers,
+    OAuth2ProgressCallback? onProgress,
   });
 
   Future<OAuth2RestResponse> post(
