@@ -93,18 +93,69 @@ class OAuth2ProviderF implements OAuth2Provider {
             request.response.headers.contentType = ContentType.html;
             request.response.write('''
               <!DOCTYPE html>
-              <html>
+              <html lang="en">
               <head>
-                <title>Error</title>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Login Failed</title>
                 <style>
-                  body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
-                  h1 { color: #e74c3c; }
-                  p { font-size: 16px; }
+                  body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background: linear-gradient(135deg, #ff9a9e, #fecfef);
+                    color: #333;
+                    margin: 0;
+                    padding: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    text-align: center;
+                  }
+                  .container {
+                    background: rgba(255, 255, 255, 0.9);
+                    padding: 40px;
+                    border-radius: 15px;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                    max-width: 400px;
+                    width: 90%;
+                  }
+                  h1 {
+                    color: #e74c3c;
+                    font-size: 2.5em;
+                    margin-bottom: 20px;
+                    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+                  }
+                  p {
+                    font-size: 1.2em;
+                    margin-bottom: 30px;
+                  }
+                  .icon {
+                    font-size: 4em;
+                    margin-bottom: 20px;
+                  }
+                  .btn {
+                    background: #e74c3c;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    font-size: 1em;
+                    cursor: pointer;
+                    text-decoration: none;
+                    display: inline-block;
+                  }
+                  .btn:hover {
+                    background: #c0392b;
+                  }
                 </style>
               </head>
               <body>
-                <h1>Login Failed</h1>
-                <p>Authentication failed. Please close this window and return to the app.</p>
+                <div class="container">
+                  <div class="icon">❌</div>
+                  <h1>Login Failed</h1>
+                  <p>Authentication failed. Please close this window and return to the app.</p>
+               
+                </div>
               </body>
               </html>
             ''');
@@ -114,18 +165,69 @@ class OAuth2ProviderF implements OAuth2Provider {
             request.response.headers.contentType = ContentType.html;
             request.response.write('''
               <!DOCTYPE html>
-              <html>
+              <html lang="en">
               <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Login Success</title>
                 <style>
-                  body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
-                  h1 { color: #4285f4; }
-                  p { font-size: 16px; }
+                  body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background: linear-gradient(135deg, #a8edea, #fed6e3);
+                    color: #333;
+                    margin: 0;
+                    padding: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    text-align: center;
+                  }
+                  .container {
+                    background: rgba(255, 255, 255, 0.9);
+                    padding: 40px;
+                    border-radius: 15px;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                    max-width: 400px;
+                    width: 90%;
+                  }
+                  h1 {
+                    color: #27ae60;
+                    font-size: 2.5em;
+                    margin-bottom: 20px;
+                    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+                  }
+                  p {
+                    font-size: 1.2em;
+                    margin-bottom: 30px;
+                  }
+                  .icon {
+                    font-size: 4em;
+                    margin-bottom: 20px;
+                  }
+                  .btn {
+                    background: #27ae60;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    font-size: 1em;
+                    cursor: pointer;
+                    text-decoration: none;
+                    display: inline-block;
+                  }
+                  .btn:hover {
+                    background: #229954;
+                  }
                 </style>
               </head>
               <body>
-                <h1>Login Success!</h1>
-                <p>Authentication completed. Please close this window and return to the app.</p>
+                <div class="container">
+                  <div class="icon">✅</div>
+                  <h1>Login Success!</h1>
+                  <p>Authentication completed. Please close this window and return to the app.</p>
+               
+                </div>
               </body>
               </html>
             ''');
