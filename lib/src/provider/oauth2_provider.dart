@@ -28,6 +28,7 @@ class OAuth2ProviderF implements OAuth2Provider {
   final String authEndpoint;
   final String tokenEndpoint;
   final String getUserInfoEndpoint;
+  final bool isUsePostCallUserInfo;
 
   String? codeVerifier;
 
@@ -43,6 +44,7 @@ class OAuth2ProviderF implements OAuth2Provider {
     required this.authEndpoint,
     required this.tokenEndpoint,
     required this.getUserInfoEndpoint,
+    this.isUsePostCallUserInfo = false,
   });
 
   String get _authUrl {
@@ -225,16 +227,32 @@ class OAuth2ProviderF implements OAuth2Provider {
     if (accessToken.isEmpty) return null;
 
     try {
-      final response = await http.get(
-        Uri.parse(getUserInfoEndpoint),
-        headers: {
-          "Authorization": "Bearer $accessToken",
-          "Content-Type": "application/json",
-        },
+      late http.Response response;
+      if (isUsePostCallUserInfo) {
+        response = await http.post(
+          Uri.parse(getUserInfoEndpoint),
+          headers: {
+            "Authorization": "Bearer $accessToken",
+            // "Content-Type": "application/json",
+          },
+        );
+      } else {
+        response = await http.get(
+          Uri.parse(getUserInfoEndpoint),
+          headers: {
+            "Authorization": "Bearer $accessToken",
+            // "Content-Type": "application/json",
+          },
+        );
+      }
+
+      debugPrint(
+        "getUserInfo status: ${response.statusCode} body: ${response.body}",
       );
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
+        debugPrint("getUserInfo response: $decoded");
         return decoded is Map<String, dynamic> ? decoded : null;
       }
     } catch (e) {

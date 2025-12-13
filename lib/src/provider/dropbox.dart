@@ -10,7 +10,8 @@ class Dropbox extends OAuth2ProviderF {
          name: "dropbox",
          authEndpoint: "https://www.dropbox.com/oauth2/authorize",
          tokenEndpoint: "https://api.dropboxapi.com/oauth2/token",
-          getUserInfoEndpoint:
-              "https://api.dropboxapi.com/2/users/get_current_account",
+         getUserInfoEndpoint:
+             "https://api.dropboxapi.com/2/users/get_current_account",
+         isUsePostCallUserInfo: true,
        );
 }

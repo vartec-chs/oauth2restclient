@@ -52,14 +52,17 @@ class OAuth2Account {
   }
 
   Future<List<(String, String)>> allAccounts({String service = ""}) async {
-    var prefix = keyFor(service, "");
+    var prefix =
+        service.isEmpty ? "$appPrefix-$tokenPrefix-" : keyFor(service, "");
     final all = await _tokenStorage.loadAll(keyPrefix: prefix);
 
     return all.keys
         .map((key) {
           final parts = key.split("-");
-          return (parts[2], parts[3]); // (serviceName, account)
+          if (parts.length < 4) return null;
+          return (parts[2], parts.sublist(3).join("-"));
         })
+        .whereType<(String, String)>()
         .where(
           (tuple) => service.isEmpty || tuple.$1.contains(service),
         ) // ✅ 필터링 추가
@@ -95,6 +98,7 @@ class OAuth2Account {
 
       // Получаем информацию о пользователе через API
       final userInfo = await provider.getUserInfo(token.accessToken);
+      debugPrint("User info: $userInfo");
       if (userInfo == null) {
         throw Exception("can't get user info from provider");
       }
