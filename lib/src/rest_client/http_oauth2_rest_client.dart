@@ -17,10 +17,14 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
   String? accessToken;
   final Future<String?> Function()? refreshToken;
 
-  String authScheme = "Bearer";
+  String authScheme;
   bool _triedOAuth = false;
 
-  HttpOAuth2RestClient({this.accessToken, this.refreshToken});
+  HttpOAuth2RestClient({
+    this.accessToken,
+    this.refreshToken,
+    this.authScheme = "Bearer",
+  });
 
   Map<String, String> _combineHeader(
     Map<String, String>? original,
