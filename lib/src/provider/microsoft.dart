@@ -1,4 +1,5 @@
 import 'oauth2_provider.dart';
+import 'package:oauth2restclient/src/provider/provider_enum.dart';
 
 class Microsoft extends OAuth2ProviderF {
   Microsoft({
@@ -7,7 +8,7 @@ class Microsoft extends OAuth2ProviderF {
     required super.redirectUri,
     required super.scopes,
   }) : super(
-         name: "microsoft",
+         name: OAuth2ProviderE.microsoft.name,
          authEndpoint:
              "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
          tokenEndpoint:

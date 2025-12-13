@@ -1,3 +1,5 @@
+import 'package:oauth2restclient/src/provider/provider_enum.dart';
+
 import 'oauth2_provider.dart';
 
 class Yandex extends OAuth2ProviderF {
@@ -7,7 +9,7 @@ class Yandex extends OAuth2ProviderF {
     required super.redirectUri,
     required super.scopes,
   }) : super(
-         name: "yandex",
+         name: OAuth2ProviderE.yandex.name,
          authEndpoint: "https://oauth.yandex.ru/authorize",
          tokenEndpoint: "https://oauth.yandex.ru/token",
          getUserInfoEndpoint: "https://login.yandex.ru/info",
