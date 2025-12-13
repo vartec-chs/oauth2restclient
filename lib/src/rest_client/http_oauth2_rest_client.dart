@@ -17,6 +17,9 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
   String? accessToken;
   final Future<String?> Function()? refreshToken;
 
+  String authScheme = "Bearer";
+  bool _triedOAuth = false;
+
   HttpOAuth2RestClient({this.accessToken, this.refreshToken});
 
   Map<String, String> _combineHeader(
@@ -54,7 +57,7 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
     required int retryCount,
   }) async {
     final lastHeaders = _combineHeader(headers, {
-      "Authorization": "Bearer $accessToken",
+      "Authorization": "$authScheme $accessToken",
       "Content-Type": body?.contentType,
       "Content-Length": body?.contentLength?.toString(),
     });
@@ -97,6 +100,23 @@ class HttpOAuth2RestClient implements OAuth2RestClient {
           onDownloadProgress: onDownloadProgress,
           token: token,
           retryCount: retryCount + 1,
+        );
+      } else if (!_triedOAuth && authScheme == "Bearer") {
+        _triedOAuth = true;
+        authScheme = "OAuth";
+        try {
+          await response.drain();
+        } catch (_) {}
+        return _request(
+          method,
+          url,
+          body: body,
+          queryParams: queryParams,
+          headers: headers,
+          onUploadProgress: onUploadProgress,
+          onDownloadProgress: onDownloadProgress,
+          token: token,
+          retryCount: retryCount,
         );
       } else {
         throw OAuth2ExceptionF.unauthorized(message: 'Failed to refresh token');
