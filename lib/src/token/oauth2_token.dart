@@ -50,7 +50,8 @@ class OAuth2TokenF implements OAuth2Token {
                 .subtract(Duration(minutes: 5))
                 .toIso8601String();
       } else {
-        json["refresh_token_expiry"] = "9999-12-31T23:59:59.999Z";
+        json["refresh_token_expiry"] =
+            DateTime.now().toUtc().add(Duration(days: 7)).toIso8601String();
       }
     }
   }
@@ -60,7 +61,7 @@ class OAuth2TokenF implements OAuth2Token {
 
     final parts = idToken!.split('.');
     if (parts.length != 3) {
-      throw Exception("🚨 ID Token 형식 오류");
+      return {};
     }
     final payload = utf8.decode(
       base64Url.decode(base64Url.normalize(parts[1])),

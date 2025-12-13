@@ -1,6 +1,6 @@
 name: oauth2restclient
 description: "A Dart/Flutter package that simplifies OAuth2 authentication and REST API interactions with automatic token management."
-version: 0.0.9
+version: 0.0.10
 repository: https://github.com/heebaek/oauth2restclient
 
 environment:
