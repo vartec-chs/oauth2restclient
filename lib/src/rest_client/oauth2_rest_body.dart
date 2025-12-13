@@ -70,7 +70,7 @@ class OAuth2FileBody implements OAuth2RestBody {
   @override
   List<int> toBytes() {
     throw UnimplementedError(
-      'OAuth2FileBody는 toBytes()를 지원하지 않습니다. toStream()을 사용하세요.',
+      'toBytes is not supported for OAuth2FileBody',
     );
   }
 

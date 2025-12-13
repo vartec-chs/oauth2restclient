@@ -65,7 +65,7 @@ class OAuth2Account {
         .whereType<(String, String)>()
         .where(
           (tuple) => service.isEmpty || tuple.$1.contains(service),
-        ) // ✅ 필터링 추가
+        ) // ✅  Проверка на совпадение сервиса
         .toList();
   }
 
@@ -88,6 +88,7 @@ class OAuth2Account {
     return loadAccount(first.$1, first.$2);
   }
 
+  /// Новый вход пользователя
   Future<OAuth2Token?> newLogin(String service) async {
     var provider = getProvider(service);
     if (provider == null) throw Exception("can't find provider '$service'");
@@ -109,6 +110,7 @@ class OAuth2Account {
     return token;
   }
 
+  /// Автоматический вход, если токен истек, выполняется повторный вход
   Future<OAuth2Token?> tryAutoLogin(String service, String userName) async {
     var token = await loadAccount(service, userName);
     if (token?.timeToLogin ?? false) {
@@ -163,18 +165,18 @@ class OAuth2Account {
     final String refreshKey =
         "${expiredToken.provider}:${expiredToken.userName}";
 
-    // 이미 진행 중인 갱신이 있는지 확인
+    // Проверьте, выполняется ли уже обновление.
     if (_pendingRefreshes.containsKey(refreshKey)) {
       return _pendingRefreshes[refreshKey];
     }
 
-    // 새로운 갱신 작업 생성
+    // Создайте новую задачу обновления.
     final refreshOperation = _doRefreshToken(expiredToken);
 
-    // 진행 중인 작업으로 등록
+    // Добавьте задачу в список выполняемых.
     _pendingRefreshes[refreshKey] = refreshOperation;
 
-    // 작업 완료 후 목록에서 제거
+    // После завершения удаления задачи из списка.
     refreshOperation.whenComplete(() {
       _pendingRefreshes.remove(refreshKey);
     });

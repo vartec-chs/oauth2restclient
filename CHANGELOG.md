@@ -1,3 +1,7 @@
+## 0.0.10
+
+* fix oauth2_account.dart pending refresh token bug
+
 ## 0.0.9
 
 * rename OneDrive provider to Microsoft
