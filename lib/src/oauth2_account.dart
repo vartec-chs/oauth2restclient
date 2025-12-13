@@ -142,9 +142,14 @@ class OAuth2Account {
     return null;
   }
 
-  Future<OAuth2RestClient> createClient(OAuth2Token token) async {
+  Future<OAuth2RestClient> createClient(
+    OAuth2Token token, {
+    String? authScheme,
+  }) async {
+    final provider = getProvider(token.provider);
     var client = HttpOAuth2RestClient(
       accessToken: token.accessToken,
+      authScheme: authScheme ?? provider?.authScheme ?? "Bearer",
       refreshToken: () async {
         try {
           var newToken = await refreshToken(token);

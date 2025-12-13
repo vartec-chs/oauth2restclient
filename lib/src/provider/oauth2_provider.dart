@@ -14,6 +14,7 @@ HttpServer? _server;
 
 abstract interface class OAuth2Provider {
   String get name;
+  String get authScheme;
   Future<OAuth2Token?> login();
   Future<String?> exchangeCode(String? code);
   Future<OAuth2Token?> refreshToken(String? refreshToken);
@@ -30,6 +31,9 @@ class OAuth2ProviderF implements OAuth2Provider {
   final String getUserInfoEndpoint;
   final bool isUsePostCallUserInfo;
 
+  @override
+  final String authScheme;
+
   String? codeVerifier;
 
   @override
@@ -45,6 +49,7 @@ class OAuth2ProviderF implements OAuth2Provider {
     required this.tokenEndpoint,
     required this.getUserInfoEndpoint,
     this.isUsePostCallUserInfo = false,
+    this.authScheme = 'Bearer',
   });
 
   String get _authUrl {
